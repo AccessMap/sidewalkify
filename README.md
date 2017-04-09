@@ -20,6 +20,10 @@ curb ramps, etc).
 `geopandas` requires GDAL to read and write files, so you also need to install
 GDAL tools for your system.
 
+Python 2: though this package is currently marked as Python 3-only, it should
+work on Python 2 as well. However, we do not currently support issues related
+to Python 2.
+
 ## Usage
 
 Once installed, `sidewalkify` is available both as a command line application

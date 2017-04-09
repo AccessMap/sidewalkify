@@ -4,7 +4,7 @@ import re
 from setuptools import setup, find_packages
 
 # Get version from package __init__.py
-with open('data_manager/__init__.py', 'r') as f:
+with open('sidewalkify/__init__.py', 'r') as f:
     __version__ = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
                             f.read(), re.MULTILINE).group(1)
 if not __version__:
@@ -14,7 +14,7 @@ if not __version__:
 doclines = __doc__.split('\n')
 
 config = {
-    'name': 'data_manager',
+    'name': 'sidewalkify',
     'version': __version__,
     'description': doclines[0],
     'long_description': '\n'.join(doclines[2:]),
@@ -22,24 +22,22 @@ config = {
     'author_email': '',
     'maintainer': '',
     'maintainer_email': '',
-    'url': 'https://github.com/accessmap/accessmap-database-bootup',
+    'url': 'https://github.com/accessmap/sidewalkify',
     'license': 'BSD',
-    'download_url': 'https://github.com/accessmap/accessmap-database-bootup.git',
+    'download_url': 'https://github.com/accessmap/sidewalkify.git',
     'install_requires': ['click',
                          'geopandas',
                          'numpy',
-                         'requests',
-                         'rtree',
                          'Shapely'],
     'packages': find_packages(),
     'include_package_data': True,
     'classifiers': ['Programming Language :: Python',
-                    'Programming Language :: Python :: 2.7',
-                    'Programming Language :: Python :: 2 :: Only'],
+                    'Programming Language :: Python :: 3.5',
+                    'Programming Language :: Python :: 3 :: Only'],
     'zip_safe': False,
     'entry_points': '''
         [console_scripts]
-        data_manager=data_manager.__main__:cli
+        sidewalkify=sidewalkify.__main__:sidewalkify
     '''
 }
 

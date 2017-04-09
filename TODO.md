@@ -8,6 +8,12 @@
 
 ## Features
 
+#### Python 2
+
+Currently, this module should work with Python 2 seamlessly. Once classes are
+added, however (like the Path class), we will need to catch Python versions
+and use a library like six.
+
 #### Reprojection
 
 It's currently assumed that the input files are in a projection in meters. If
