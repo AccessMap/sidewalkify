@@ -27,6 +27,7 @@ config = {
     'download_url': 'https://github.com/accessmap/sidewalkify.git',
     'install_requires': ['click',
                          'geopandas',
+                         'networkx',
                          'numpy',
                          'Shapely'],
     'packages': find_packages(),
