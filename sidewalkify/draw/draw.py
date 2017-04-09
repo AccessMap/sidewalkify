@@ -2,7 +2,7 @@ import geopandas as gpd
 from shapely import geometry
 
 
-def draw_sidewalks(paths):
+def draw_sidewalks(paths, crs=4326):
     geometries = []
     for path in paths:
         for edge in path['edges']:
@@ -39,7 +39,10 @@ def draw_sidewalks(paths):
             if edge['sidewalk'] is not None:
                 geometries.append(edge['sidewalk'])
 
-    return gpd.GeoDataFrame(geometry=geometries)
+    gdf = gpd.GeoDataFrame(geometry=geometries)
+    gdf.crs = crs
+
+    return gdf
 
 
 def split(line, point):

@@ -16,9 +16,9 @@ curb ramps, etc).
 
 `pip install sidewalkify`
 
-`sidewalkify` requires the `networkx` and `geopandas` libraries. `geopandas`
-requires GDAL to read and write files, so you also need to install GDAL tools
-for your system.
+`sidewalkify` requires the `click`, `networkx` and `geopandas` libraries.
+`geopandas` requires GDAL to read and write files, so you also need to install
+GDAL tools for your system.
 
 ## Usage
 
@@ -33,11 +33,12 @@ Example:
 
 ##### Arguments
 
-The input and output files can be any file type readable by
-`geopandas.read_file`, which should be anything readable by `fiona`, i.e. GDAL.
-For example, you could also use a GeoJSON input file and csv output:
+The input file can be any file type readable by `geopandas.read_file`, which
+should be anything readable by `fiona`, i.e. GDAL.
 
-    sidewalkify <input.geojson> <output.csv>
+For example, you could also use a GeoJSON input file:
+
+    sidewalkify <input.geojson> <output.shp>
 
 #### Python Library
 
@@ -121,10 +122,18 @@ a single list of paths. The `precision` argument is passed to `create_graph`.
 The `draw` module creates the actual sidewalk lines once the sidewalk paths
 have been found using the `graph` module.
 
-###### `sidewalkify.draw.draw(paths)`
+###### `sidewalkify.draw.draw_sidewalks(paths, crs=4326)`
 
-The `draw` function draws (relatively) clean, connect sidewalk lines. It
-requires input in the form output by `sidewalkify.graph.graph_workflow`.
+The `draw_sidewalks` function draws (relatively) clean, connect sidewalk lines.
+It requires input in the form output by `sidewalkify.graph.graph_workflow`.
+
+By default, the new sidewalk lines are assumed to be in the 4326 CRS (WGS84,
+or lat-lon). You can override this by setting a new CRS, for example:
+
+    gdf2 = sdw.draw.draw_sidewalks(paths, crs=26910)
+
+This would ensure that the files created are in the right project. In this
+case, NAD83 for Washington, United States (in meters).
 
 ## Architecture
 

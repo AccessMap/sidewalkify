@@ -1,3 +1,9 @@
+# sidewalkify-specific ignores
+venv
+
+# Python ignores
 *.pyc
 *__pycache__
+
+# Editor ignores
 *.swp

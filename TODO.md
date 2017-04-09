@@ -8,6 +8,12 @@
 
 ## Features
 
+#### Reprojection
+
+It's currently assumed that the input files are in a projection in meters. If
+this is not the case, could offer a way to automatically project to something
+like UTM (or provide a reprojection parameter).
+
 #### Object-oriented design for data structures
 
 Evaluate OO for data structures in this module. Specifically, the `edges`
