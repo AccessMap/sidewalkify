@@ -1,6 +1,5 @@
-click==6.6
+click==6.7
 geopandas==0.2.1
-numpy==1.11.2
-pandas==0.19.0
 networkx==1.11
-Shapely==1.5.17
+numpy==1.12.1
+Shapely==1.5.17.post1
