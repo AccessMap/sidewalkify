@@ -7,7 +7,7 @@ def draw_sidewalks(paths, crs=4326):
     for path in paths:
         for edge in path['edges']:
             offset = edge['offset']
-            if offset:
+            if offset > 0:
                 geom = edge['geometry'].parallel_offset(offset, 'right',
                                                         resolution=10,
                                                         join_style=2)

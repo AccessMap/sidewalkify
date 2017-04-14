@@ -75,7 +75,8 @@ which the geometry is finally pointing.
 * `offset`: The offset, in meters, of the sidewalk. This always indicates a
 right-hand offset - the `sw_right` column value is used for `forward=True`
 edges, the `sw_left` column value is used for `forward=False` edges. A value of
-`0` means that no sidewalk exists for this geometry, and none will be drawn.
+`0` (or a negative value, such as `-1`) means that no sidewalk exists for this
+geometry, and none will be drawn.
 * `id`: This is copied from the original dataset.
 
 Vertices of the graph are coordinates where streets meet (like an intersection)

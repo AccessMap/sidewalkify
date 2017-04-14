@@ -12,7 +12,7 @@
 
 Currently, this module should work with Python 2 seamlessly. Once classes are
 added, however (like the Path class), we will need to catch Python versions
-and use a library like six.
+and use a library like `six`.
 
 #### Reprojection
 
@@ -26,10 +26,7 @@ Evaluate OO for data structures in this module. Specifically, the `edges`
 object in the graph and the paths creates in the graph module. This will make
 it easier to specify the input/output of the various functions and autodoc.
 
-#### Catch negative `sw_right`/`left` values
-
-Currently, we expect an offset of `0` to indicate that no sidewalk is present.
-We should also allow a negative value to mean this (e.g. -1).
+Counterpoint: dictionaries are easier to serialize, e.g. graph JSON.
 
 #### Read from / write to database
 
