@@ -1,4 +1,7 @@
-'''data_manager for AccessMap: fetch, clean, and stage pedestrian geodata'''
+'''`sidewalkify` is a Python library and command line application for drawing
+sidewalk lines from street centerline data.
+
+See project information at https://github.com/AccessMap/sidewalkify'''
 
 import re
 from setuptools import setup, find_packages
@@ -16,14 +19,14 @@ doclines = __doc__.split('\n')
 config = {
     'name': 'sidewalkify',
     'version': __version__,
-    'description': doclines[0],
+    'description': ' '.join(doclines[:2]),
     'long_description': '\n'.join(doclines[2:]),
     'author': '',
     'author_email': '',
     'maintainer': '',
     'maintainer_email': '',
     'url': 'https://github.com/accessmap/sidewalkify',
-    'license': 'BSD',
+    'license': 'MIT / Apache 2.0',
     'download_url': 'https://github.com/accessmap/sidewalkify.git',
     'install_requires': ['click',
                          'geopandas',
