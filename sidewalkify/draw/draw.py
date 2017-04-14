@@ -2,7 +2,7 @@ import geopandas as gpd
 from shapely import geometry
 
 
-def draw_sidewalks(paths, crs=4326):
+def draw_sidewalks(paths, crs={'init': 'epsg:4326'}):
     geometries = []
     for path in paths:
         for edge in path['edges']:

@@ -8,6 +8,11 @@
 
 ## Features
 
+#### Input checking
+
+1. Check for non-LineString geometries (e.g. MultiLineString) prior to
+conversion.
+
 #### Python 2
 
 Currently, this module should work with Python 2 seamlessly. Once classes are
