@@ -181,4 +181,5 @@ the path would not be cyclic, such as a sidewalk near a coastline.
 
 # License
 
-Dual-licensed MIT and Apache 2.0
+Dual-licensed MIT and Apache 2.0. You can treat this project as being licensed
+under one or the other, depending on your preference.
