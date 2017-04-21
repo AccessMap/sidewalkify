@@ -5,7 +5,7 @@ import networkx as nx
 from .utils import azimuth
 
 
-def create_graph(gdf, precision=1):
+def create_graph(gdf, precision=1, simplify=0.05):
     '''Create a networkx DiGraph given a GeoDataFrame of lines. Every line will
     correspond to two directional graph edges, one forward, one reverse. The
     original line row and direction will be stored in each edge. Every node
@@ -14,7 +14,7 @@ def create_graph(gdf, precision=1):
 
     '''
     # The geometries sometimes have tiny end parts - get rid of those!
-    gdf.geometry = gdf.geometry.simplify(0.05)
+    gdf.geometry = gdf.geometry.simplify(simplify)
 
     G = nx.DiGraph()
 

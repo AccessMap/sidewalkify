@@ -2,15 +2,15 @@ import geopandas as gpd
 from shapely import geometry
 
 
-def draw_sidewalks(paths, crs={'init': 'epsg:4326'}):
+def draw_sidewalks(paths, crs={'init': 'epsg:4326'}, resolution=1):
     geometries = []
     for path in paths:
         for edge in path['edges']:
             offset = edge['offset']
             if offset > 0:
                 geom = edge['geometry'].parallel_offset(offset, 'right',
-                                                        resolution=10,
-                                                        join_style=2)
+                                                        resolution=resolution,
+                                                        join_style=1)
                 # FIXME: For some reason, geometry seems to be drawn in reverse
                 # order, resulting in counter-clockwise sidewalks. This is
                 # unintuitive (as the paths were created clockwise), so we
