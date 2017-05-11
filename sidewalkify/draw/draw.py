@@ -15,8 +15,23 @@ def draw_sidewalks(paths, crs={'init': 'epsg:4326'}, resolution=1):
                 # order, resulting in counter-clockwise sidewalks. This is
                 # unintuitive (as the paths were created clockwise), so we
                 # reverse them here. Figure out why this happened!
-                geom = geometry.LineString(reversed(geom.coords))
-                edge['sidewalk'] = geom
+
+                # parallel_offset can produce a lot of weird output. We want to keep only correct linestrings
+                if geom == None:
+                    logging.warning("sidewalk draw did not create a geometry")
+                    edge['sidewalk'] = None
+                elif geom.geom_type == 'MultiLineString':
+                    logging.warning("sidewalk draw created a complex geometry that was removed from output")
+                    edge['sidewalk'] = None
+                elif geom.geom_type == 'LineString' and len(geom.coords) < 2:
+                    logging.warning("sidewalk draw created an invalid linestring that was removed from output")
+                    edge['sidewalk'] = None
+                elif geom.geom_type == 'Point':
+                    logging.warning("sidewalk draw created a point that was removed from output")
+                    edge['sidewalk'] = None
+                else: # valid geometry
+                    geom = geometry.LineString(reversed(geom.coords))
+                    edge['sidewalk'] = geom
             else:
                 edge['sidewalk'] = None
 
