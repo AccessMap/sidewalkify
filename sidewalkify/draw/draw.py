@@ -1,8 +1,11 @@
 import geopandas as gpd
 from shapely import geometry
+import logging
 
 
 def draw_sidewalks(paths, crs={'init': 'epsg:4326'}, resolution=1):
+    logging.basicConfig(filename='./output/warnings.log', level=logging.WARNING)
+
     geometries = []
     for path in paths:
         for edge in path['edges']:
@@ -15,8 +18,23 @@ def draw_sidewalks(paths, crs={'init': 'epsg:4326'}, resolution=1):
                 # order, resulting in counter-clockwise sidewalks. This is
                 # unintuitive (as the paths were created clockwise), so we
                 # reverse them here. Figure out why this happened!
-                geom = geometry.LineString(reversed(geom.coords))
-                edge['sidewalk'] = geom
+
+                # parallel_offset can produce a lot of weird output. We want to keep only correct linestrings
+                side_code = edge['forward']
+                side = "right" if side_code == 1 else "left"
+                row_id = edge['id']
+                edge['sidewalk'] = None
+                if geom == None:
+                    logging.warning("Draw error: sidewalk on " + side + " side of street id " +  str(row_id) + " did not create a geometry")
+                elif geom.geom_type == 'MultiLineString':
+                    logging.warning("Draw error: sidewalk on " + side + " side of street id " +  str(row_id) + " created a complex geometry that was removed from output")
+                elif geom.geom_type == 'LineString' and len(geom.coords) < 2:
+                    logging.warning("Draw error: sidewalk on " + side + " side of street id " +  str(row_id) + " created an invalid linestring geometry that was removed from output")
+                elif geom.geom_type == 'Point':
+                    logging.warning("Draw error: sidewalk on " + side + " side of street id " +  str(row_id) + " created a point geometry that was removed from output")
+                else: # valid geometry
+                    geom = geometry.LineString(reversed(geom.coords))
+                    edge['sidewalk'] = geom
             else:
                 edge['sidewalk'] = None
 
