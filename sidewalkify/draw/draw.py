@@ -1,4 +1,5 @@
 import geopandas as gpd
+import pandas as pd
 from shapely import geometry
 import logging
 
@@ -7,6 +8,8 @@ def draw_sidewalks(paths, crs={'init': 'epsg:4326'}, resolution=1):
     logging.basicConfig(filename='./output/warnings.log', level=logging.WARNING)
 
     geometries = []
+    side_codes = []
+    row_ids = []
     for path in paths:
         for edge in path['edges']:
             offset = edge['offset']
@@ -53,11 +56,21 @@ def draw_sidewalks(paths, crs={'init': 'epsg:4326'}, resolution=1):
             path['edges'][-1]['sidewalk'] = geom1
             path['edges'][0]['sidewalk'] = geom2
 
+
         for edge in path['edges']:
             if edge['sidewalk'] is not None:
                 geometries.append(edge['sidewalk'])
+                side_codes.append(edge['forward'])
+                row_ids.append(edge['id'])
 
-    gdf = gpd.GeoDataFrame(geometry=geometries)
+    data = {
+        'st_id': row_ids,
+        'side': side_codes
+    }
+
+    df = pd.DataFrame(data)
+
+    gdf = gpd.GeoDataFrame(df, geometry=geometries)
     gdf.crs = crs
 
     return gdf
