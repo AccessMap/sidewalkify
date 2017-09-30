@@ -40,6 +40,10 @@ Example:
 The input file can be any file type readable by `geopandas.read_file`, which
 should be anything readable by `fiona`, i.e. GDAL.
 
+The input file must have two metadata columns: `sw_right` and `sw_left`. The
+values in these columns must be the offset distance of the sidewalk. A negative
+value indicates the nonexistence of the sidewalk on that side of the street.
+
 For example, you could also use a GeoJSON input file:
 
     sidewalkify <input.geojson> <output.shp>

@@ -15,6 +15,8 @@ def draw_sidewalks(paths, crs={'init': 'epsg:4326'}, resolution=1):
                 # order, resulting in counter-clockwise sidewalks. This is
                 # unintuitive (as the paths were created clockwise), so we
                 # reverse them here. Figure out why this happened!
+                if geom.type == 'MultiLineString':
+                    geom = sorted(geom.geoms, key=lambda x: x.length)[0]
                 geom = geometry.LineString(reversed(geom.coords))
                 edge['sidewalk'] = geom
             else:
