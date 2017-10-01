@@ -3,7 +3,7 @@ from shapely import geometry
 
 
 def draw_sidewalks(paths, crs={'init': 'epsg:4326'}, resolution=1):
-    geometries = []
+    rows = []
     for path in paths:
         for edge in path['edges']:
             offset = edge['offset']
@@ -17,8 +17,11 @@ def draw_sidewalks(paths, crs={'init': 'epsg:4326'}, resolution=1):
                 # reverse them here. Figure out why this happened!
                 if geom.type == 'MultiLineString':
                     geom = sorted(geom.geoms, key=lambda x: x.length)[0]
-                geom = geometry.LineString(reversed(geom.coords))
-                edge['sidewalk'] = geom
+                if geom.length > 0:
+                    geom = geometry.LineString(reversed(geom.coords))
+                    edge['sidewalk'] = geom
+                else:
+                    edge['sidewalk'] = None
             else:
                 edge['sidewalk'] = None
 
@@ -39,9 +42,13 @@ def draw_sidewalks(paths, crs={'init': 'epsg:4326'}, resolution=1):
 
         for edge in path['edges']:
             if edge['sidewalk'] is not None:
-                geometries.append(edge['sidewalk'])
+                rows.append({
+                  'geometry': edge['sidewalk'],
+                  'street_id': edge['id'],
+                  'forward': edge['forward']
+                })
 
-    gdf = gpd.GeoDataFrame(geometry=geometries)
+    gdf = gpd.GeoDataFrame(rows)
     gdf.crs = crs
 
     return gdf
