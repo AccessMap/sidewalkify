@@ -13,8 +13,9 @@ and how it connects to other sidewalks (e.g., places to cross the street,
 curb ramps, etc).
 
 ## Installation
+clone file locally where osm_sidewalk_staging main file is and 
 
-`pip install sidewalkify`
+`pip install sidewalkify` locally
 
 `sidewalkify` requires the `click`, `networkx` and `geopandas` libraries.
 `geopandas` requires GDAL to read and write files, so you also need to install

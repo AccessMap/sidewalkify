@@ -1,9 +1,13 @@
 import geopandas as gpd
 from shapely import geometry
+import logging
 
 
 def draw_sidewalks(paths, crs={'init': 'epsg:4326'}, resolution=1):
     rows = []
+    logging.basicConfig(filename='./output/warnings.log',
+                        level=logging.WARNING)
+
     for path in paths:
         for edge in path['edges']:
             offset = edge['offset']
