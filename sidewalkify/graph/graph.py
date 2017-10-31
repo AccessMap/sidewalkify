@@ -43,7 +43,7 @@ def create_graph(gdf, precision=1, simplify=0.05):
             'offset': row.sw_right,
             'id': row.id
         }
-        G.add_edge(start, end, fwd_attr)
+        G.add_edge(start, end, **fwd_attr)
 
         # Add reverse edge
         rev_attr = {
@@ -54,7 +54,7 @@ def create_graph(gdf, precision=1, simplify=0.05):
             'offset': row.sw_left,
             'id': row.id
         }
-        G.add_edge(end, start, rev_attr)
+        G.add_edge(end, start, **rev_attr)
 
     gdf.apply(add_edges, axis=1, args=[G])
 
@@ -76,9 +76,9 @@ def process_acyclic(G):
         # Identify candidates first - don't want to create/remove candidates
         # by updating at the same time
         candidates = []
-        for node in G.nodes_iter():
-            predecessors = G.predecessors(node)
-            successors = G.successors(node)
+        for node in G.nodes():
+            predecessors = list(G.predecessors(node))
+            successors = list(G.successors(node))
             in_degree = len(predecessors)
             out_degree = len(successors)
 
@@ -94,7 +94,7 @@ def process_acyclic(G):
             # If this point is reached, it's a dangle!
             paths.append(find_path(G, candidate, list(G[candidate])[0]))
 
-        G.remove_nodes_from(nx.isolates(G))
+        G.remove_nodes_from(list(nx.isolates(G)))
         if n == len(paths):
             # No change since last pass = exhausted attempts
             break
@@ -106,7 +106,7 @@ def process_cyclic(G):
     while True:
         # Pick the next edge (or random - there's no strategy here)
         try:
-            edge = next(G.edges_iter())
+            edge = next(iter(G.edges()))
         except StopIteration:
             break
         # Start traveling
