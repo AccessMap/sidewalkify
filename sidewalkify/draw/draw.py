@@ -78,6 +78,12 @@ def split(line, point):
 def trim(edge1, edge2):
     geom1 = edge1['sidewalk']
     geom2 = edge2['sidewalk']
+
+    # If edge IDs match, it's a 'dead end' (doubling back), so don't change
+    # anything.
+    if edge1['id'] == edge2['id']:
+        return (geom1, geom2)
+
     if geom1 is None:
         if geom2 is None:
             return (geom1, geom2)
