@@ -13,7 +13,7 @@ and how it connects to other sidewalks (e.g., places to cross the street,
 curb ramps, etc).
 
 ## Installation
-clone file locally where osm_sidewalk_staging main file is and 
+clone file locally where osm_sidewalk_staging main file is and
 
 `pip install sidewalkify` locally
 
@@ -105,22 +105,10 @@ Example:
 The resulting digraph (`G`) can be accessed with the standard methods available
 to a `networkx` `DiGraph`. For example, to find the edge from
 
-###### `sidewalkify.graph.process_acyclic(G)`:
+###### `sidewalkify.graph.find_paths(G)`:
 
-`process_acyclic(G)` will create a list of acyclic paths (lists of edges) from
-the graph created by `create_graph`. Once `process_acyclic` has completed, only
-cyclic paths should remain in G. *Important*: The edges used to create paths
-will be removed from `G` in-place.
-
-###### `sidewalkify.graph.process_cyclic(G)`:
-
-`process_cyclic(G)` will create a list of cyclic paths (lists of edges) from
-the graph created by `create_graph`.
-
-*Important*: `process_cyclic` assumes that only cyclic paths remain in the
-graph. If a non-cylic path exists, process_acylic may enter an infinite loop.
-
-*Important*: The edges used to create paths will be removed from `G` in-place.
+`find_paths(G)` will create a list of paths following the edges created by
+`create_graph`.
 
 ###### `sidewalkify.graph.graph_workflow(gdf, precision=1)`:
 
@@ -180,9 +168,7 @@ ignored.
 For a standard city block with good coverage, `sidewalkify` will find a cyclic
 path, eventually constructing a closed rectangle. For a similar block that
 contains a dead end, `sidewalkify` will still find a cyclic path, but the
-resulting sidewalk will (by default) be broken at the end of the dead end. In
-addition, `sidewalkify` will create an open (non-cyclic) set of sidewalks when
-the path would not be cyclic, such as a sidewalk near a coastline.
+resulting sidewalk will (by default) be broken at the end of the dead end.
 
 # License
 

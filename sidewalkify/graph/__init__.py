@@ -1,2 +1,2 @@
-from .graph import create_graph, process_acyclic, process_cyclic
+from .graph import create_graph, find_paths
 from .graph import graph_workflow

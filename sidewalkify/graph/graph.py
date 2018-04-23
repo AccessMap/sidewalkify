@@ -2,7 +2,9 @@ import numpy as np
 from shapely import geometry
 import networkx as nx
 
-from .utils import azimuth
+# TODO: use azimuth_lnglat for [lng,lat] projection, cartesian for flat
+from .utils import azimuth_cartesian as azimuth
+from .utils import cw_distance
 
 
 def create_graph(gdf, precision=1, simplify=0.05):
@@ -40,7 +42,8 @@ def create_graph(gdf, precision=1, simplify=0.05):
             'geometry': geom,
             'az1': azimuth(coords[0], coords[1]),
             'az2': azimuth(coords[-2], coords[-1]),
-            'offset': row.sw_right,
+            'offset': row.sw_left,
+            'visited': 0,
             'id': row.id
         }
         G.add_edge(start, end, **fwd_attr)
@@ -51,7 +54,8 @@ def create_graph(gdf, precision=1, simplify=0.05):
             'geometry': geom_r,
             'az1': azimuth(coords_r[0], coords_r[1]),
             'az2': azimuth(coords_r[-2], coords_r[-1]),
-            'offset': row.sw_left,
+            'offset': row.sw_right,
+            'visited': 0,
             'id': row.id
         }
         G.add_edge(end, start, **rev_attr)
@@ -61,144 +65,83 @@ def create_graph(gdf, precision=1, simplify=0.05):
     return G
 
 
-def process_acyclic(G):
-    paths = []
-    while True:
-        # Handle 'endpoint' starts - certainly acyclic
-        n = len(paths)
-        # We want to start with a dangling node - an edge that terminates.
-        # Features of that dangling node:
-        #   1) degree of node inputs is 1 or 0
-        #   2) degree of node outputs is 1.
-        #   3) if degree of node inputs is 1, the input to the node is the
-        #      output to the node.
+def find_paths(G):
+    '''Find paths representing a combinatorial map of sidewalks.
 
-        # Identify candidates first - don't want to create/remove candidates
-        # by updating at the same time
-        candidates = []
-        for node in G.nodes():
-            predecessors = list(G.predecessors(node))
-            successors = list(G.successors(node))
-            in_degree = len(predecessors)
-            out_degree = len(successors)
+    :param G: A graph with edges labeled with 'az1' and 'az2' keys,
+              where 'az1' = azimuth out of a node, 'az2' = azimuth into a node.
+    :type G: networkx.DiGraph
+    :returns: A list of paths (nodes) describing the combinatorial map.
+    :rtype: list of nodes
 
-            if out_degree == 1:
-                if in_degree == 0:
-                    candidates.append(node)
-                elif in_degree == 1:
-                    if successors == predecessors:
-                        candidates.append(node)
-
-        # Create paths for every candidate
-        for candidate in candidates:
-            # If this point is reached, it's a dangle!
-            paths.append(find_path(G, candidate, list(G[candidate])[0]))
-
-        G.remove_nodes_from(list(nx.isolates(G)))
-        if n == len(paths):
-            # No change since last pass = exhausted attempts
-            break
-    return paths
-
-
-def process_cyclic(G):
+    '''
     paths = []
     while True:
         # Pick the next edge (or random - there's no strategy here)
         try:
-            edge = next(iter(G.edges()))
+            gen = (e for e in G.edges(data=True) if not e[2]['visited'])
+            u, v, d = next(gen)
         except StopIteration:
             break
         # Start traveling
-        paths.append(find_path(G, edge[0], edge[1], cyclic=True))
-        # G.remove_nodes_from(nx.isolates(G))
+        paths.append(find_path(G, u, v))
     return paths
 
 
-def find_path(G, e1, e2, cyclic=False):
-    '''Given a starting edge (e1, e2), travel until one of the following
-    conditions is met:
-    1) The path terminates (node degree 1)
-    2) A node has been revisited (cycle)
+def find_path(G, u, v):
+    '''
+    Finds a single path as part of building a combinatorial map corresponding
+    to sidewalks.
 
-    It's assumed that edge (e1, e2) actually exists in the graph.
+    :param G: The graph
+    :type G: networkx.DiGraph
+    :param u: Node at which to start.
+    :type u: str
+    :param v: First node to choose (u and v describe an edge).
+    :type v: str
+    It's assumed that edge (u, v) actually exists in the graph.
 
     '''
     path = {}
     path['edges'] = []
     path['nodes'] = []
 
-    def ccw_dist(az1, az2):
-        diff = (az1 + np.pi) % (2 * np.pi) - az2
-        if diff < 0:
-            diff += 2 * np.pi
-        return diff
-
     # Travel the first edge
-    edge_attr = G[e1][e2]
-    path['edges'].append(edge_attr)
-    path['nodes'].append(e1)
-    path['nodes'].append(e2)
-    G.remove_edge(e1, e2)
+    G[u][v]['visited'] = 1
+
+    path['edges'].append(G[u][v])
+    path['nodes'].append(u)
+    path['nodes'].append(v)
+
+    def circular_dist(G, u, v, x):
+        if u == x:
+            # Should sort last - just make it a big int
+            return 1e6
+        else:
+            return cw_distance((G[u][v]['az2'] + 180) % 360, G[v][x]['az1'])
+
     while True:
-        # Want to avoid two things:
-        # 1) traveling the same edge again
-        # 2) revisiting the last-visited node (doubling back)
+        u_previous = u
+        u = v
 
-        # Prevent doubling back to the same node
-        nodes_out = [node for node in G.successors(e2) if node != e1]
-        n = len(nodes_out)
-
-        if n == 0:
-            # Terminal node reached - could also by cycle (if traveled node
-            # was removed)
+        successors = list(G.successors(v))
+        if not successors:
             break
 
-        e1 = e2
+        v = min(successors, key=lambda x: circular_dist(G, u_previous, u, x))
 
-        if n == 1:
-            # There's only one choice! Skip azimuth math.
-            e2 = nodes_out[0]
-            edge_attr = G[e1][e2]
-        else:
-            # Get the nearest counterclockwise edge - i.e. make rightmost turn.
-            az = edge_attr['az2']
-            attrs = [(node, G[e1][node]) for node in nodes_out]
-            e2, edge_attr = min(attrs,
-                                key=lambda x: ccw_dist(az, x[1]['az1']))
+        if G[u][v]['visited']:
+            break
 
-        path['edges'].append(edge_attr)
-        path['nodes'].append(e2)
-        G.remove_edge(e1, e2)
-
-        if cyclic:
-            # If this node has been visited before, we've traveled a cycle
-            # should stop after traveling this edge
-            if e2 == path['nodes'][0]:
-                break
-        # If path was not cyclic, it will terminate when another terminal
-        # edge is found.
-
-    if path['nodes'][0] == path['nodes'][-1]:
-        path['cyclic'] = True
-    else:
-        path['cyclic'] = False
+        path['edges'].append(G[u][v])
+        path['nodes'].append(v)
+        G[u][v]['visited'] = 1
 
     return path
 
 
-def path_to_geom(path):
-    coords = []
-    coords.append(path['edges'][0]['geometry'].coords[0])
-    for p in path['edges']:
-        coords += p['geometry'].coords[1:]
-    return geometry.LineString(coords)
-
-
 def graph_workflow(gdf, precision=1):
     G = create_graph(gdf, precision=precision)
-    acyclic_paths = process_acyclic(G)
-    cyclic_paths = process_cyclic(G)
-    paths = acyclic_paths + cyclic_paths
+    paths = find_paths(G)
 
     return paths
