@@ -26,8 +26,13 @@ def draw_sidewalks(paths, crs={'init': 'epsg:4326'}, resolution=1):
 
         # Iterate over edges and attach/trim
         # Note: path is cyclic, so we shift the list
-        edges_from = path['edges']
-        edges_to = path['edges'][1:] + [path['edges'][0]]
+        if path['cyclic']:
+            edges_from = path['edges']
+            edges_to = path['edges'][1:] + [path['edges'][0]]
+        else:
+            edges_from = path['edges'][:-1]
+            edges_to = path['edges'][1:]
+
         for edge1, edge2 in zip(edges_from, edges_to):
             # TODO: should consider totality of previous edges to check for
             # intersection - may be missing overlaps.

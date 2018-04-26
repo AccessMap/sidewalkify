@@ -105,6 +105,7 @@ def find_path(G, u, v):
     path = {}
     path['edges'] = []
     path['nodes'] = []
+    path['cyclic'] = False
 
     # Travel the first edge
     G[u][v]['visited'] = 1
@@ -126,11 +127,15 @@ def find_path(G, u, v):
 
         successors = list(G.successors(v))
         if not successors:
+            if u == path['nodes'][0]:
+                path['cyclic'] = True
             break
 
         v = min(successors, key=lambda x: circular_dist(G, u_previous, u, x))
 
         if G[u][v]['visited']:
+            if u == path['nodes'][0]:
+                path['cyclic'] = True
             break
 
         path['edges'].append(G[u][v])
