@@ -12,7 +12,7 @@ install_requires = \
 
 setup_kwargs = {
     'name': 'sidewalkify',
-    'version': '0.1.0',
+    'version': '0.2.1',
     'description': 'Command line tool and Python library for extrapolating sidewalk lines from annotated streets',
     'long_description': None,
     'author': 'Nick Bolten',

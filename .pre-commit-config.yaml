@@ -11,14 +11,14 @@ repos:
       name: export_setup_py
       entry: "poetry run python ./create_setup.py"
       language: system
-      files: "pyproject.toml"
+      files: "./pyproject.toml"
     - id: export_requirements
       name: export_requirements
       entry: "poetry export -f requirements.txt > requirements.txt"
       language: system
-      files: "pyproject.toml"
+      files: "./pyproject.toml"
     - id: export_dev_requirements
       name: export_dev_requirements
       entry: "poetry export --dev -f requirements.txt > requirements-dev.txt"
       language: system
-      files: "pyproject.toml"
+      files: "./pyproject.toml"
