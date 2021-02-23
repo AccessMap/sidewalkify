@@ -1,5 +1,6 @@
 from shapely.geometry import LineString
-from .utils import cut
+
+from sidewalkify.geo.cut import cut
 
 
 def trim(edge1, edge2):

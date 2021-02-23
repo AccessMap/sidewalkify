@@ -3,8 +3,8 @@ from shapely import geometry
 import networkx as nx
 
 # TODO: use azimuth_lnglat for [lng,lat] projection, cartesian for flat
-from .utils import azimuth_cartesian as azimuth
-from .utils import cw_distance
+from sidewalkify.geo.azimuth import azimuth_cartesian as azimuth
+from sidewalkify.geo.cw_distance import cw_distance
 
 
 def create_graph(gdf, precision=1, simplify=0.05):
