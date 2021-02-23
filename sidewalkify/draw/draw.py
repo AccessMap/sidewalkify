@@ -3,26 +3,10 @@ from .trim import trim
 
 
 def draw_sidewalks(paths, crs={"init": "epsg:4326"}, resolution=1):
-    def edge_to_sidewalk_geom(edge):
-        offset = edge["offset"]
-        if offset > 0:
-            geom = edge["geometry"].parallel_offset(
-                offset, "left", resolution=resolution, join_style=1
-            )
-
-            if geom.length <= 0:
-                return None
-            else:
-                return geom
-        else:
-            return None
-
-        return geom
-
     rows = []
     for path in paths:
         for edge in path["edges"]:
-            edge["sidewalk"] = edge_to_sidewalk_geom(edge)
+            edge["sidewalk"] = edge_to_sidewalk_geom(edge, resolution)
 
         # Iterate over edges and attach/trim
         # Note: path is cyclic, so we shift the list
@@ -61,3 +45,18 @@ def draw_sidewalks(paths, crs={"init": "epsg:4326"}, resolution=1):
     gdf.crs = crs
 
     return gdf
+
+
+def edge_to_sidewalk_geom(edge, resolution):
+    offset = edge["offset"]
+    if offset > 0:
+        geom = edge["geometry"].parallel_offset(
+            offset, "left", resolution=resolution, join_style=1
+        )
+
+        if geom.length <= 0:
+            return None
+        else:
+            return geom
+    else:
+        return None
