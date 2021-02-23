@@ -2,13 +2,13 @@
 from setuptools import setup
 
 packages = \
-['sidewalkify', 'sidewalkify.draw', 'sidewalkify.graph']
+['sidewalkify', 'sidewalkify.draw', 'sidewalkify.geo', 'sidewalkify.graph']
 
 package_data = \
 {'': ['*']}
 
 install_requires = \
-['click==7.1.2', 'geopandas==0.3.0', 'networkx==2.0', 'shapely==1.7.1']
+['click==7.1.2', 'geopandas==0.3.0', 'networkx>=2.0,<3.0', 'shapely==1.7.1']
 
 setup_kwargs = {
     'name': 'sidewalkify',
