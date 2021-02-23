@@ -16,9 +16,9 @@ repos:
       name: export_requirements
       entry: "poetry export -f requirements.txt > requirements.txt"
       language: system
-      files: "./requirements.txt"
+      files: "pyproject.toml"
     - id: export_dev_requirements
       name: export_dev_requirements
       entry: "poetry export --dev -f requirements.txt > requirements-dev.txt"
       language: system
-      files: "./requirements-dev.txt"
+      files: "pyproject.toml"
