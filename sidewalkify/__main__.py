@@ -13,12 +13,13 @@ from . import draw
 @click.command()
 @click.argument("infile")
 @click.argument("outfile")
-def sidewalkify(infile, outfile):
+@click.option("--driver", default="GeoJSON")
+def sidewalkify(infile, outfile, driver):
     gdf = gpd.read_file(infile)
     crs = gdf.crs
     paths = graph.graph_workflow(gdf)
     sidewalks = draw.draw_sidewalks(paths, crs=crs)
-    sidewalks.to_file(outfile)
+    sidewalks.to_file(outfile, driver=driver)
 
 
 if __name__ == "__main__":
