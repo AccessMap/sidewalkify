@@ -1,7 +1,7 @@
-'''Handle data fetching/cleaning tasks automatically. Reads and writes from a
+"""Handle data fetching/cleaning tasks automatically. Reads and writes from a
 pseudo-database in the filesystem, organized as ./cities/<city>/
 
-'''
+"""
 
 import click
 import geopandas as gpd
@@ -11,8 +11,8 @@ from . import draw
 
 
 @click.command()
-@click.argument('infile')
-@click.argument('outfile')
+@click.argument("infile")
+@click.argument("outfile")
 def sidewalkify(infile, outfile):
     gdf = gpd.read_file(infile)
     crs = gdf.crs
@@ -20,5 +20,6 @@ def sidewalkify(infile, outfile):
     sidewalks = draw.draw_sidewalks(paths, crs=crs)
     sidewalks.to_file(outfile)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sidewalkify()

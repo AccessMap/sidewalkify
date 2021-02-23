@@ -9,11 +9,10 @@ def cut(line, distance):
     for i, p in enumerate(coords):
         pd = line.project(Point(p))
         if pd == distance:
-            return [
-                LineString(coords[:i+1]),
-                LineString(coords[i:])]
+            return [LineString(coords[: i + 1]), LineString(coords[i:])]
         if pd > distance:
             cp = line.interpolate(distance)
             return [
                 LineString(coords[:i] + [(cp.x, cp.y)]),
-                LineString([(cp.x, cp.y)] + coords[i:])]
+                LineString([(cp.x, cp.y)] + coords[i:]),
+            ]

@@ -8,13 +8,13 @@ from .utils import cw_distance
 
 
 def create_graph(gdf, precision=1, simplify=0.05):
-    '''Create a networkx DiGraph given a GeoDataFrame of lines. Every line will
+    """Create a networkx DiGraph given a GeoDataFrame of lines. Every line will
     correspond to two directional graph edges, one forward, one reverse. The
     original line row and direction will be stored in each edge. Every node
     will be where endpoints meet (determined by being very close together) and
     will store a clockwise ordering of incoming edges.
 
-    '''
+    """
     # The geometries sometimes have tiny end parts - get rid of those!
     gdf.geometry = gdf.geometry.simplify(simplify)
 
@@ -38,25 +38,25 @@ def create_graph(gdf, precision=1, simplify=0.05):
 
         # Add forward edge
         fwd_attr = {
-            'forward': 1,
-            'geometry': geom,
-            'az1': azimuth(coords[0], coords[1]),
-            'az2': azimuth(coords[-2], coords[-1]),
-            'offset': row.sw_left,
-            'visited': 0,
-            'id': row.id
+            "forward": 1,
+            "geometry": geom,
+            "az1": azimuth(coords[0], coords[1]),
+            "az2": azimuth(coords[-2], coords[-1]),
+            "offset": row.sw_left,
+            "visited": 0,
+            "id": row.id,
         }
         G.add_edge(start, end, **fwd_attr)
 
         # Add reverse edge
         rev_attr = {
-            'forward': 0,
-            'geometry': geom_r,
-            'az1': azimuth(coords_r[0], coords_r[1]),
-            'az2': azimuth(coords_r[-2], coords_r[-1]),
-            'offset': row.sw_right,
-            'visited': 0,
-            'id': row.id
+            "forward": 0,
+            "geometry": geom_r,
+            "az1": azimuth(coords_r[0], coords_r[1]),
+            "az2": azimuth(coords_r[-2], coords_r[-1]),
+            "offset": row.sw_right,
+            "visited": 0,
+            "id": row.id,
         }
         G.add_edge(end, start, **rev_attr)
 
@@ -66,7 +66,7 @@ def create_graph(gdf, precision=1, simplify=0.05):
 
 
 def find_paths(G):
-    '''Find paths representing a combinatorial map of sidewalks.
+    """Find paths representing a combinatorial map of sidewalks.
 
     :param G: A graph with edges labeled with 'az1' and 'az2' keys,
               where 'az1' = azimuth out of a node, 'az2' = azimuth into a node.
@@ -74,12 +74,12 @@ def find_paths(G):
     :returns: A list of paths (nodes) describing the combinatorial map.
     :rtype: list of nodes
 
-    '''
+    """
     paths = []
     while True:
         # Pick the next edge (or random - there's no strategy here)
         try:
-            gen = (e for e in G.edges(data=True) if not e[2]['visited'])
+            gen = (e for e in G.edges(data=True) if not e[2]["visited"])
             u, v, d = next(gen)
         except StopIteration:
             break
@@ -89,7 +89,7 @@ def find_paths(G):
 
 
 def find_path(G, u, v):
-    '''
+    """
     Finds a single path as part of building a combinatorial map corresponding
     to sidewalks.
 
@@ -101,25 +101,25 @@ def find_path(G, u, v):
     :type v: str
     It's assumed that edge (u, v) actually exists in the graph.
 
-    '''
+    """
     path = {}
-    path['edges'] = []
-    path['nodes'] = []
-    path['cyclic'] = False
+    path["edges"] = []
+    path["nodes"] = []
+    path["cyclic"] = False
 
     # Travel the first edge
-    G[u][v]['visited'] = 1
+    G[u][v]["visited"] = 1
 
-    path['edges'].append(G[u][v])
-    path['nodes'].append(u)
-    path['nodes'].append(v)
+    path["edges"].append(G[u][v])
+    path["nodes"].append(u)
+    path["nodes"].append(v)
 
     def circular_dist(G, u, v, x):
         if u == x:
             # Should sort last - just make it a big int
             return 1e6
         else:
-            return cw_distance((G[u][v]['az2'] + 180) % 360, G[v][x]['az1'])
+            return cw_distance((G[u][v]["az2"] + 180) % 360, G[v][x]["az1"])
 
     while True:
         u_previous = u
@@ -127,20 +127,20 @@ def find_path(G, u, v):
 
         successors = list(G.successors(v))
         if not successors:
-            if u == path['nodes'][0]:
-                path['cyclic'] = True
+            if u == path["nodes"][0]:
+                path["cyclic"] = True
             break
 
         v = min(successors, key=lambda x: circular_dist(G, u_previous, u, x))
 
-        if G[u][v]['visited']:
-            if u == path['nodes'][0]:
-                path['cyclic'] = True
+        if G[u][v]["visited"]:
+            if u == path["nodes"][0]:
+                path["cyclic"] = True
             break
 
-        path['edges'].append(G[u][v])
-        path['nodes'].append(v)
-        G[u][v]['visited'] = 1
+        path["edges"].append(G[u][v])
+        path["nodes"].append(v)
+        G[u][v]["visited"] = 1
 
     return path
 
