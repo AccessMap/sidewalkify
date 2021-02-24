@@ -13,6 +13,9 @@ install_requires = \
  'networkx>=2.0,<3.0',
  'shapely==1.7.1']
 
+entry_points = \
+{'console_scripts': ['sidewalkify = sidewalkify.cli:sidewalkify']}
+
 setup_kwargs = {
     'name': 'sidewalkify',
     'version': '0.2.1',
@@ -26,6 +29,7 @@ setup_kwargs = {
     'packages': packages,
     'package_data': package_data,
     'install_requires': install_requires,
+    'entry_points': entry_points,
     'python_requires': '>=3.6.1,<4.0.0',
 }
 

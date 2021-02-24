@@ -5,6 +5,9 @@ description = "Command line tool and Python library for extrapolating sidewalk l
 authors = ["Nick Bolten <nbolten@gmail.com>"]
 license = "Apache-2.0"
 
+[tool.poetry.scripts]
+sidewalkify = "sidewalkify.cli:sidewalkify"
+
 [tool.poetry.dependencies]
 python = "^3.6.1"
 click = "7.1.2"
