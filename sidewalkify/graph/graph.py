@@ -4,7 +4,7 @@ import networkx as nx
 
 # TODO: use azimuth_lnglat for [lng,lat] projection, cartesian for flat
 from sidewalkify.geo.azimuth import azimuth_cartesian as azimuth
-from sidewalkify.geo.cw_distance import cw_distance
+from sidewalkify.graph.find_paths import find_paths
 
 
 def create_graph(gdf, precision=1, simplify=0.05):
@@ -21,79 +21,6 @@ def create_graph(gdf, precision=1, simplify=0.05):
     gdf.apply(add_edges, axis=1, args=[G, precision])
 
     return G
-
-
-def find_paths(G):
-    """Find paths representing a combinatorial map of sidewalks.
-
-    :param G: A graph with edges labeled with 'az1' and 'az2' keys,
-              where 'az1' = azimuth out of a node, 'az2' = azimuth into a node.
-    :type G: networkx.DiGraph
-    :returns: A list of paths (nodes) describing the combinatorial map.
-    :rtype: list of nodes
-
-    """
-    paths = []
-    while True:
-        # Pick the next edge (or random - there's no strategy here)
-        try:
-            gen = (e for e in G.edges(data=True) if not e[2]["visited"])
-            u, v, d = next(gen)
-        except StopIteration:
-            break
-        # Start traveling
-        paths.append(find_path(G, u, v))
-    return paths
-
-
-def find_path(G, u, v):
-    """
-    Finds a single path as part of building a combinatorial map corresponding
-    to sidewalks.
-
-    :param G: The graph
-    :type G: networkx.DiGraph
-    :param u: Node at which to start.
-    :type u: str
-    :param v: First node to choose (u and v describe an edge).
-    :type v: str
-    It's assumed that edge (u, v) actually exists in the graph.
-
-    """
-    path = {}
-    path["edges"] = []
-    path["nodes"] = []
-    path["cyclic"] = False
-
-    # Travel the first edge
-    G[u][v]["visited"] = 1
-
-    path["edges"].append(G[u][v])
-    path["nodes"].append(u)
-    path["nodes"].append(v)
-
-    while True:
-        u_previous = u
-        u = v
-
-        successors = list(G.successors(v))
-        if not successors:
-            if u == path["nodes"][0]:
-                path["cyclic"] = True
-            break
-
-        v = min(successors, key=lambda x: circular_dist(G, u_previous, u, x))
-
-        if G[u][v]["visited"]:
-            if u == path["nodes"][0]:
-                path["cyclic"] = True
-            break
-
-        path["edges"].append(G[u][v])
-        path["nodes"].append(v)
-        G[u][v]["visited"] = 1
-
-    return path
 
 
 # TODO: converting to string is probably unnecessary - keeping float may be
@@ -143,11 +70,3 @@ def graph_workflow(gdf, precision=1):
     paths = find_paths(G)
 
     return paths
-
-
-def circular_dist(G, u, v, x):
-    if u == x:
-        # Should sort last - just make it a big int
-        return 1e6
-    else:
-        return cw_distance((G[u][v]["az2"] + 180) % 360, G[v][x]["az1"])
