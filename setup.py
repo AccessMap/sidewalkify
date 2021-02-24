@@ -8,7 +8,10 @@ package_data = \
 {'': ['*']}
 
 install_requires = \
-['click==7.1.2', 'geopandas==0.3.0', 'networkx>=2.0,<3.0', 'shapely==1.7.1']
+['click==7.1.2',
+ 'geopandas>=0.8.0,<0.9.0',
+ 'networkx>=2.0,<3.0',
+ 'shapely==1.7.1']
 
 setup_kwargs = {
     'name': 'sidewalkify',
