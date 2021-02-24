@@ -33,36 +33,35 @@ def make_node(coord, precision):
 # az1 is the azimuth of the first segment of the geometry (point into the
 # geometry), az2 is for the last segment (pointing out of the geometry)
 def add_edges(row, G, precision):
-    geom = row.geometry
-    coords = list(geom.coords)
-    geom_r = geometry.LineString(coords[::-1])
-    coords_r = geom_r.coords
-    start = make_node(coords[0], precision)
-    end = make_node(coords[-1], precision)
-
-    # Add forward edge
-    fwd_attr = {
+    d_f = {
         "forward": 1,
-        "geometry": geom,
-        "az1": azimuth(coords[0], coords[1]),
-        "az2": azimuth(coords[-2], coords[-1]),
-        "offset": row.sw_left,
-        "visited": 0,
-        "id": row.id,
+        "geometry": row["geometry"],
+        "offset": row["sw_left"],
     }
-    G.add_edge(start, end, **fwd_attr)
 
-    # Add reverse edge
-    rev_attr = {
+    geom_r = geometry.LineString(row["geometry"].coords[::-1])
+    d_r = {
         "forward": 0,
         "geometry": geom_r,
-        "az1": azimuth(coords_r[0], coords_r[1]),
-        "az2": azimuth(coords_r[-2], coords_r[-1]),
-        "offset": row.sw_right,
-        "visited": 0,
-        "id": row.id,
+        "offset": row["sw_right"],
     }
-    G.add_edge(end, start, **rev_attr)
+
+    for d in [d_f, d_r]:
+        d["visited"] = 0
+        d["id"] = row["id"]
+
+        d["az1"] = azimuth(d["geometry"].coords[0], d["geometry"].coords[1])
+        d["az2"] = azimuth(d["geometry"].coords[-2], d["geometry"].coords[-1])
+
+    u_f = make_node(d_f["geometry"].coords[0], precision)
+    v_f = make_node(d_f["geometry"].coords[-1], precision)
+    u_r = make_node(d_r["geometry"].coords[0], precision)
+    v_r = make_node(d_r["geometry"].coords[-1], precision)
+
+    # FIXME: this is a very slow way to add edges - instead, use the .add_edges
+    # method in batches
+    G.add_edge(u_f, v_f, **d_f)
+    G.add_edge(u_r, v_r, **d_r)
 
 
 def graph_workflow(gdf, precision=1):
