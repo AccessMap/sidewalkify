@@ -14,9 +14,13 @@ from . import draw
 @click.argument("infile")
 @click.argument("outfile")
 @click.option("--driver", default="GeoJSON")
-def sidewalkify(infile, outfile, driver):
+@click.option("--precision", default=1)
+def sidewalkify(infile, outfile, driver, precision):
     gdf = gpd.read_file(infile)
     crs = gdf.crs
-    paths = graph.graph_workflow(gdf)
+
+    G = graph.create_graph(gdf, precision=precision)
+    paths = graph.find_paths(G)
+
     sidewalks = draw.draw_sidewalks(paths, crs=crs)
     sidewalks.to_file(outfile, driver=driver)

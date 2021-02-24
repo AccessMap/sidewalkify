@@ -62,10 +62,3 @@ def add_edges(row, G, precision):
     # method in batches
     G.add_edge(u_f, v_f, **d_f)
     G.add_edge(u_r, v_r, **d_r)
-
-
-def graph_workflow(gdf, precision=1):
-    G = create_graph(gdf, precision=precision)
-    paths = find_paths(G)
-
-    return paths
