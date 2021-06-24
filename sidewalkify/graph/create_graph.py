@@ -4,7 +4,6 @@ import networkx as nx
 
 # TODO: use azimuth_lnglat for [lng,lat] projection, cartesian for flat
 from sidewalkify.geo.azimuth import azimuth_cartesian as azimuth
-from sidewalkify.graph.find_paths import find_paths
 
 
 def create_graph(gdf, precision=1, simplify=0.05):

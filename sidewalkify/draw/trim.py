@@ -44,7 +44,14 @@ def ixn_and_trim(geom1, geom2, join=False):
             # TODO: get a little fancier with this - transition is probably
             # more abrupt.
             x1, y1 = geom1.coords[-1]
-            x2, y2 = geom2.coords[0]
+            try:
+                x2, y2 = geom2.coords[0]
+            except NotImplementedError as e:
+                print(geom2)
+                print(geom2.type)
+                print(geom2.geoms)
+                raise e
+
             avg = ((x1 + x2) / 2, (y1 + y2) / 2)
 
             geom1 = LineString(geom1.coords[:-1] + [avg])

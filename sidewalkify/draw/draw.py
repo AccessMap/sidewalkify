@@ -1,4 +1,6 @@
 import geopandas as gpd
+from shapely.geometry import LineString
+
 from .trim import trim
 
 
@@ -56,6 +58,15 @@ def edge_to_sidewalk_geom(edge, resolution):
 
         if geom.length <= 0:
             return None
+        elif geom.type == "MultiLineString":
+            # TODO: can this be handled more elegantly? Investigate why the
+            # offset algorithm sometimes creates MultiLineStrings and handle
+            # cases on a more specific basis.
+            coords = []
+            for geom in geom.geoms:
+                coords += list(geom.coords)
+            geom = LineString(coords)
+            return geom
         else:
             return geom
     else:
