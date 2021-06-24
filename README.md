@@ -21,9 +21,7 @@ clone file locally where osm_sidewalk_staging main file is and
 `geopandas` requires GDAL to read and write files, so you also need to install
 GDAL tools for your system.
 
-Python 2: though this package is currently marked as Python 3-only, it should
-work on Python 2 as well. However, we do not currently support issues related
-to Python 2.
+This package requires Python 3.7+.
 
 ## Usage
 
@@ -44,6 +42,13 @@ adjusted accordingly: the default value is 1, which is on the scale of a
 country in WGS84. Alternatively, you can reproject your input dataset into a
 reasonable local CRS (in meters) and all default settings should work as
 expected. For the Seattle area, we use CRS 26910.
+
+Important: the above statement also applies to offset values (`sw_right` and
+`sw_left` in the input data): they are interpreted within the coordinate
+system of the input data. If your input is in longitude-latitude degrees, you
+also need to think of the offset as being degrees as well. If your input was in
+meters, you can (very roughly) multiply it by 1e-5 to get
+a similar (but distorted) output.
 
 ##### Arguments
 
