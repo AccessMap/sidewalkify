@@ -1,7 +1,11 @@
 import math
+from typing import Tuple
 
 
-def azimuth_lnglat(p1, p2):
+Coordinate = Tuple[float, float]
+
+
+def azimuth_lnglat(p1: Coordinate, p2: Coordinate) -> float:
     """
     Calculates the bearing between two lng-lat points.
 
@@ -35,7 +39,7 @@ def azimuth_lnglat(p1, p2):
     return compass_bearing
 
 
-def azimuth_cartesian(p1, p2):
+def azimuth_cartesian(p1: Coordinate, p2: Coordinate) -> float:
     """
     Calculates the bearing between two projected points on a square-ish 2D
     plane (i.e., a map projection with identical xy units)

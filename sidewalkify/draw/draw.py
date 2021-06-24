@@ -1,10 +1,18 @@
-import geopandas as gpd
-from shapely.geometry import LineString
+from typing import List, Optional
+
+# TODO: add type hints for geopandas
+import geopandas as gpd  # type: ignore
+
+# TODO: add type hints for shapely
+from shapely.geometry import LineString  # type: ignore
 
 from .trim import trim
+from sidewalkify.graph.find_path import Path
 
 
-def draw_sidewalks(paths, crs={"init": "epsg:4326"}, resolution=1):
+def draw_sidewalks(
+    paths: List[Path], crs: dict = {"init": "epsg:4326"}, resolution: int = 1
+) -> gpd.GeoDataFrame:
     rows = []
     for path in paths:
         for edge in path["edges"]:
@@ -49,7 +57,9 @@ def draw_sidewalks(paths, crs={"init": "epsg:4326"}, resolution=1):
     return gdf
 
 
-def edge_to_sidewalk_geom(edge, resolution):
+# TODO: Replace Any with shapely.geometry.LineString
+# TODO: add a more specific type for edge data?
+def edge_to_sidewalk_geom(edge: dict, resolution: int) -> Optional[LineString]:
     offset = edge["offset"]
     if offset > 0:
         geom = edge["geometry"].parallel_offset(

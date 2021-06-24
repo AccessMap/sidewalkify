@@ -1,4 +1,4 @@
-def cw_distance(az1, az2):
+def cw_distance(az1: float, az2: float) -> float:
     """
     Calculates the 'clockwise' distance between two azimuths, where 0 = North
     and the direction of increasing angle is clockwise.

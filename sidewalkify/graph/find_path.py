@@ -1,7 +1,18 @@
+from typing import List, TypedDict
+
+import networkx as nx
+
 from sidewalkify.geo.cw_distance import cw_distance
 
 
-def find_path(G, u, v):
+# TODO: create more specific edge type?
+class Path(TypedDict):
+    edges: List[dict]
+    nodes: List[str]
+    cyclic: bool
+
+
+def find_path(G: nx.DiGraph, u: str, v: str) -> Path:
     """
     Finds a single path as part of building a combinatorial map corresponding
     to sidewalks.
@@ -15,10 +26,11 @@ def find_path(G, u, v):
     It's assumed that edge (u, v) actually exists in the graph.
 
     """
-    path = {}
-    path["edges"] = []
-    path["nodes"] = []
-    path["cyclic"] = False
+    path: Path = {
+        "edges": [],
+        "nodes": [],
+        "cyclic": False,
+    }
 
     # Travel the first edge
     G[u][v]["visited"] = 1
@@ -51,7 +63,7 @@ def find_path(G, u, v):
     return path
 
 
-def _circular_dist(G, u, v, x):
+def _circular_dist(G: nx.DiGraph, u: str, v: str, x: str) -> float:
     if u == x:
         # Should sort last - just make it a big int
         return 1e6

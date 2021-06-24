@@ -1,9 +1,12 @@
-from shapely.geometry import LineString
+from typing import Tuple
+
+# TODO: add shapely type hints
+from shapely.geometry import LineString  # type: ignore
 
 from sidewalkify.geo.cut import cut
 
 
-def trim(edge1, edge2):
+def trim(edge1: dict, edge2: dict) -> Tuple[LineString, LineString]:
     geom1 = edge1["sidewalk"]
     geom2 = edge2["sidewalk"]
 
@@ -35,7 +38,9 @@ def trim(edge1, edge2):
             return ixn_and_trim(geom1, geom2, join=True)
 
 
-def ixn_and_trim(geom1, geom2, join=False):
+def ixn_and_trim(
+    geom1: LineString, geom2: LineString, join: bool = False
+) -> Tuple[LineString, LineString]:
     ixn = geom1.intersection(geom2)
     if ixn.is_empty:
         # They don't intersect.

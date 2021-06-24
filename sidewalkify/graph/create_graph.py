@@ -1,12 +1,19 @@
-import numpy as np
-from shapely import geometry
-import networkx as nx
+from typing import Tuple
+
+# TODO: add type hints for these libraries
+from geopandas import GeoDataFrame  # type: ignore
+import numpy as np  # type: ignore
+from pandas import Series
+from shapely import geometry  # type: ignore
+import networkx as nx  # type: ignore
 
 # TODO: use azimuth_lnglat for [lng,lat] projection, cartesian for flat
 from sidewalkify.geo.azimuth import azimuth_cartesian as azimuth
 
 
-def create_graph(gdf, precision=1, simplify=0.05):
+def create_graph(
+    gdf: GeoDataFrame, precision: int = 1, simplify: float = 0.05
+) -> nx.DiGraph:
     """Create a networkx DiGraph given a GeoDataFrame of lines. Every line will
     correspond to two directional graph edges, one forward, one reverse. The
     original line row and direction will be stored in each edge. Every node
@@ -22,16 +29,17 @@ def create_graph(gdf, precision=1, simplify=0.05):
     return G
 
 
-# TODO: converting to string is probably unnecessary - keeping float may be
-# faster
-def make_node(coord, precision):
-    return tuple(np.round(coord, precision))
+def make_node(
+    coord: Tuple[float, float], precision: int
+) -> Tuple[float, float]:
+    rounded_coords = np.round(coord, precision)
+    return (rounded_coords[0], rounded_coords[1])
 
 
 # Edges are stored as (from, to, data), where from and to are nodes.
 # az1 is the azimuth of the first segment of the geometry (point into the
 # geometry), az2 is for the last segment (pointing out of the geometry)
-def add_edges(row, G, precision):
+def add_edges(row: Series, G: nx.DiGraph, precision: int) -> None:
     d_f = {
         "forward": 1,
         "geometry": row["geometry"],

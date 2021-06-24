@@ -1,7 +1,11 @@
-from sidewalkify.graph.find_path import find_path
+from typing import List
+
+import networkx as nx
+
+from sidewalkify.graph.find_path import find_path, Path
 
 
-def find_paths(G):
+def find_paths(G: nx.DiGraph) -> List[Path]:
     """Find paths representing a combinatorial map of sidewalks.
 
     :param G: A graph with edges labeled with 'az1' and 'az2' keys,

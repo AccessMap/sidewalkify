@@ -1,7 +1,10 @@
-from shapely.geometry import LineString, Point
+from typing import List
+
+# TODO: add shapely types
+from shapely.geometry import LineString, Point  # type: ignore
 
 
-def cut(line, distance):
+def cut(line: LineString, distance: float) -> List[LineString]:
     # Cuts a line in two at a distance from its starting point
     if distance <= 0.0 or distance >= line.length:
         return [LineString(line)]
@@ -16,3 +19,4 @@ def cut(line, distance):
                 LineString(coords[:i] + [(cp.x, cp.y)]),
                 LineString([(cp.x, cp.y)] + coords[i:]),
             ]
+    return [LineString(line)]

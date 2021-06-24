@@ -4,7 +4,9 @@ pseudo-database in the filesystem, organized as ./cities/<city>/
 """
 
 import click
-import geopandas as gpd
+
+# TODO: Add type hints for geopandas
+import geopandas as gpd  # type: ignore
 
 from . import graph
 from . import draw
@@ -15,7 +17,9 @@ from . import draw
 @click.argument("outfile")
 @click.option("--driver", default="GeoJSON")
 @click.option("--precision", default=1)
-def sidewalkify(infile, outfile, driver, precision):
+def sidewalkify(
+    infile: str, outfile: str, driver: str, precision: int
+) -> None:
     gdf = gpd.read_file(infile)
     crs = gdf.crs
 
