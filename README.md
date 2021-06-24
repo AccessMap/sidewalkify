@@ -34,7 +34,16 @@ and a Python library.
 
 Example:
 
-    sidewalkify <input.shp> <output.shp>
+    sidewalkify <input.geojson> <output.geojson>
+
+Important: the output and arguments will be treated under the same coordinate
+scheme (projection) as the input data. So if your input geojson is in WGS84,
+i.e. CRS 4326, latitude-longitude, so will your output. In addition, the
+precision argument will be in terms of degrees longitude/latitude and should be
+adjusted accordingly: the default value is 1, which is on the scale of a
+country in WGS84. Alternatively, you can reproject your input dataset into a
+reasonable local CRS (in meters) and all default settings should work as
+expected. For the Seattle area, we use CRS 26910.
 
 ##### Arguments
 
@@ -47,7 +56,17 @@ value indicates the nonexistence of the sidewalk on that side of the street.
 
 For example, you could also use a GeoJSON input file:
 
-    sidewalkify <input.geojson> <output.shp>
+    sidewalkify <input.geojson> <output.geojson>
+
+Options:
+
+    --driver=GeoJSON: set the GDAL-compatible driver to use for output.
+    --precision=1: set the rounding precision for treating streets as
+                   connected. The default value of 1 is reasonable for a
+                   streets dataset projected in meters with reasonably accurate
+                   data and is approximately 10 centimeters. For a dataset in
+                   WGS84 (latitude-longitude), a precision of 5 or 6 is more
+                   appropriate.
 
 #### Python Library
 
@@ -98,7 +117,7 @@ Example:
     import geopandas as gpd
     import sidewalkify as sdw
 
-    gdf = gpd.read_file('./test.shp')
+    gdf = gpd.read_file('./test.geojson')
 
     G = sdw.graph.create_graph(gdf)
 
@@ -130,7 +149,7 @@ or lat-lon). You can override this by setting a new CRS, for example:
 
     gdf2 = sdw.draw.draw_sidewalks(paths, crs=26910)
 
-This would ensure that the files created are in the right project. In this
+This would ensure that the files created are in the right projection. In this
 case, NAD83 for Washington, United States (in meters).
 
 ## Architecture
